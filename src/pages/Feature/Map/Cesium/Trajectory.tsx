@@ -95,7 +95,6 @@ const Trajectory: React.FC = () => {
     // 获取所有实体
     let entities = viewer.entities.values;
     let entity = entities.find((item: any) => item.properties.text._value === 'A');
-    console.log(entity);
     // 计算entity的经纬度
     let cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(entity.position._value);
     let lng = Cesium.Math.toDegrees(cartographic.longitude);
@@ -121,7 +120,6 @@ const Trajectory: React.FC = () => {
         let longitudeString = Cesium.Math.toDegrees(cartographic.longitude); // 经度
         let latitudeString = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
         let heightString = cartographic.height.toFixed(2); // 高度
-        console.log(longitudeString, latitudeString, heightString);
 
         // 绘制圆形
         viewer.entities.add({
@@ -159,8 +157,6 @@ const Trajectory: React.FC = () => {
           ...positionsGeoRef.current,
           { longitude: longitudeString, latitude: latitudeString },
         ];
-        console.log('绘制中', positionsArrRef.current);
-        console.log('绘制中', positionsGeoRef.current);
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   };
@@ -173,12 +169,7 @@ const Trajectory: React.FC = () => {
 
     handlerRef.current.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    console.log('positionsArrRef', positionsArrRef.current);
-    console.log('positionsGeoRef', positionsGeoRef.current);
-
     let dataPath = handlerComputePoint(positionsGeoRef.current, 1000);
-
-    console.log('绘制完成距离计算路径', dataPath);
 
     if (dataPath.length > 1000) {
       messageApi.open({
@@ -239,7 +230,6 @@ const Trajectory: React.FC = () => {
     demodulationPath.push({ longitude: demodulationPath[0].longitude, latitude: demodulationPath[0].latitude }); // 添加第一个点, 形成闭合路径
 
     let polygonArrays = [interceptPath, locationPath, demodulationPath]; // 三个路径组成的多边形数组
-    console.log('polygonArrays', polygonArrays);
 
     // 全部渲染不做合并测试
     polygonArrays.forEach((item) => {
@@ -254,7 +244,6 @@ const Trajectory: React.FC = () => {
     // 合并多边形
     try {
       const mergedPolygon = mergePolygons(polygonArrays);
-      console.log('合并后的多边形:', JSON.stringify(mergedPolygon, null, 2));
 
       // 在 Cesium 中显示合并后的多边形
       viewer.entities.add({
@@ -275,7 +264,6 @@ const Trajectory: React.FC = () => {
     let polygonArrays = pathPointData;
     try {
       const mergedPolygon = mergePolygonsPath(polygonArrays);
-      console.log('Merged polygon:', JSON.stringify(mergedPolygon, null, 2));
 
       // 在 Cesium 中显示合并后的多边形
       viewer.entities.add({
@@ -293,7 +281,6 @@ const Trajectory: React.FC = () => {
   // NOTE 不合并渲染 200+ (214)
   const handlerFalseMerge = () => {
     // 全部渲染不做合并
-    console.log(pathPointData[0].length);
     pathPointData.forEach((item, index) => {
       viewer.entities.add({
         polygon: {

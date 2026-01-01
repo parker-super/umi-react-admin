@@ -1,5 +1,5 @@
 import { ProCard } from '@ant-design/pro-components';
-import * as d3 from 'd3';
+import { axisBottom, axisTop, pointer, select } from 'd3';
 import { useEffect, useRef } from 'react';
 import { data, frequencyTicks } from './components/DataUnit.ts';
 
@@ -58,7 +58,7 @@ const Frequency = () => {
     if (!svgRef.current || !data?.length) return;
 
     // 清除现有内容
-    d3.select(svgRef.current).selectAll('*').remove();
+    select(svgRef.current).selectAll('*').remove();
 
     // 设置尺寸和边距
     const margin = { top: 50, right: 0, bottom: 50, left: 0 };
@@ -148,7 +148,7 @@ const Frequency = () => {
     // 添加鼠标移动事件监听
     backgroundLayer.on('mousemove', function (event) {
       // 1. 获取鼠标位置并调整到正确的坐标系
-      const [mouseX] = d3.pointer(event);
+      const [mouseX] = pointer(event);
 
       // 2. 创建一个更精确的频率计算方法
       // 首先找到鼠标位置两侧的刻度点
@@ -248,7 +248,7 @@ const Frequency = () => {
     // 处理鼠标点击事件
     backgroundLayer.on('click', function (event) {
       // 1. 获取鼠标位置并调整到正确的坐标系
-      const [mouseX] = d3.pointer(event);
+      const [mouseX] = pointer(event);
 
       // 2. 创建一个更精确的频率计算方法
       // 首先找到鼠标位置两侧的刻度点
@@ -352,7 +352,7 @@ const Frequency = () => {
 
     // 创建轴
     const createAxis = (position: any) => {
-      const axis = position === 'top' ? d3.axisTop(xScale) : d3.axisBottom(xScale); // 创建轴
+      const axis = position === 'top' ? axisTop(xScale) : axisBottom(xScale); // 创建轴
       const yPos = position === 'top' ? 0 : totalHeight - margin.top; // 计算轴的位置
 
       const axisGroup = svg
@@ -439,7 +439,6 @@ const Frequency = () => {
         .on('click', function (event, label: any) {
           const hz = valueMap.get(label);
           const matches = findMatchingFrequencies(hz);
-          console.log(matches, 'matches');
 
           if (matches.length > 0) {
             const content = matches
@@ -642,7 +641,7 @@ const Frequency = () => {
         rect.on('mouseover', function (event) {
           event.stopPropagation(); // 阻止事件冒泡
           // 高亮显示当前频率块
-          d3.select(this).attr('opacity', 0.9).attr('stroke', '#000').attr('stroke-width', 1);
+          select(this).attr('opacity', 0.9).attr('stroke', '#000').attr('stroke-width', 1);
 
           // 清除刻度线和刻度 tooltip
           tooltip.style('visibility', 'hidden'); // 隐藏tooltip
@@ -669,8 +668,7 @@ const Frequency = () => {
 
         // 鼠标移出时隐藏tooltip
         rect.on('mouseout', function () {
-          console.log('mouseout');
-          d3.select(this).attr('opacity', 0.7).attr('stroke', 'none');
+          select(this).attr('opacity', 0.7).attr('stroke', 'none');
 
           hoverTooltip.style('visibility', 'hidden');
         });

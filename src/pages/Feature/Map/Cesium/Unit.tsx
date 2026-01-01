@@ -68,7 +68,6 @@ const Unit = () => {
         const cartographic = Cesium.Cartographic.fromCartesian(position);
         const longitude = Cesium.Math.toDegrees(cartographic.longitude);
         const latitude = Cesium.Math.toDegrees(cartographic.latitude);
-        console.log('经纬度坐标', longitude + ',' + latitude);
       }
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
@@ -221,28 +220,14 @@ const Unit = () => {
         const east = Cesium.Math.toDegrees(rectangle.east); // 转换为经度
         const north = Cesium.Math.toDegrees(rectangle.north); // 转换为纬度
         messageApi.success(`${west},${south},${east},${north}`);
-        console.log('左上角:', west, north, '右下角:', east, south);
         // 获取矩形四个角的经纬度坐标
         const southwest = new Cesium.Cartographic(rectangle.west, rectangle.south); // 西南角, 左下角
         const northwest = new Cesium.Cartographic(rectangle.west, rectangle.north); // 西北角, 左上角
         const northeast = new Cesium.Cartographic(rectangle.east, rectangle.north); // 东北角, 右上角
         const southeast = new Cesium.Cartographic(rectangle.east, rectangle.south); // 东南角, 右下角
         // console.log('矩形四个角的经纬度坐标', southwest, northwest, northeast, southeast);
-        console.log(
-          `左上角: ${Cesium.Math.toDegrees(northwest.longitude)}, ${Cesium.Math.toDegrees(northwest.latitude)}`,
-        );
-        console.log(
-          `右上角: ${Cesium.Math.toDegrees(northeast.longitude)}, ${Cesium.Math.toDegrees(northeast.latitude)}`,
-        );
-        console.log(
-          `左下角: ${Cesium.Math.toDegrees(southwest.longitude)}, ${Cesium.Math.toDegrees(southwest.latitude)}`,
-        );
-        console.log(
-          `右下角: ${Cesium.Math.toDegrees(southeast.longitude)}, ${Cesium.Math.toDegrees(southeast.latitude)}`,
-        );
 
         const entitiesInside = getEntitiesInRectangle(viewer, rectangle);
-        console.log('矩形实体内的实体', entitiesInside);
 
         // 销毁事件
         handlerRef.current.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -267,15 +252,12 @@ const Unit = () => {
   // NOTE 获取实体数据
   const handlePull = () => {
     const entities = viewer.entities.values;
-    console.log('实体数据', entities);
     entities.forEach((entity: any) => {
-      console.log(entity);
       // 获取实体经纬度坐标
       const position = entity.position.getValue(Cesium.JulianDate.now()); // 获取实体位置
       const cartographic = Cesium.Cartographic.fromCartesian(position); // 转换为经纬度坐标
       const longitude = Cesium.Math.toDegrees(cartographic.longitude); // 转换为经度
       const latitude = Cesium.Math.toDegrees(cartographic.latitude); // 转换为纬度
-      console.log('经纬度坐标', longitude, latitude);
 
       // entity.properties._name._value // 获取实体添加的名称/信息
     });

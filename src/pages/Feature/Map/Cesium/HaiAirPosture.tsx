@@ -1,4 +1,3 @@
-import thermal from '@/utils/MapCompute/ThermalMapData.json';
 import { iconData } from '@/utils/MapCompute/dataEnd';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
@@ -128,9 +127,12 @@ const HaiAirPosture = () => {
     // viewer.camera.setView(initView);
     viewer.camera.flyTo(initView);
 
-    let obj = JSON.parse(JSON.stringify(thermal));
-    let arrayResult = obj.coverageData.arrayResult;
-    setData(arrayResult);
+    // 动态加载热力图数据
+    import('@/utils/MapCompute/ThermalMapData.json').then((thermal) => {
+      const obj = JSON.parse(JSON.stringify(thermal.default));
+      const arrayResult = obj.coverageData.arrayResult;
+      setData(arrayResult);
+    });
 
     // 2, 添加一个点击事件来显示位置坐标：
     viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement: { position: Cesium.Cartesian2 }) {
@@ -176,18 +178,8 @@ const HaiAirPosture = () => {
         const minutes = parseFloat(matches[2]);
         const seconds = parseFloat(matches[3]);
 
-        // 验证数值
-        console.log('Parsed values:', {
-          degrees,
-          minutes,
-          seconds,
-          sign,
-        });
-
         // 转换为十进制度数
         const decimal = sign * (Math.abs(degrees) + minutes / 60 + seconds / 3600);
-
-        console.log('Converted decimal:', decimal);
 
         return decimal;
       } catch (error) {
@@ -201,8 +193,6 @@ const HaiAirPosture = () => {
 
     const lonDD = convertDMSToDD(longitude);
     const latDD = convertDMSToDD(latitude);
-
-    console.log('Final coordinates:', { lonDD, latDD });
 
     // 确保坐标有效再创建位置
     if (lonDD !== null && latDD !== null && !isNaN(lonDD) && !isNaN(latDD)) {

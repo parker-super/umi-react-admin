@@ -15,7 +15,6 @@ export const requestConfig: RequestConfig = {
     // 错误接收及处理
     errorHandler: (error: any, opts: any) => {
       const { response } = error;
-      console.log(response, opts);
 
       if (!!response && response.status === 400) {
         const data = response.clone().json();

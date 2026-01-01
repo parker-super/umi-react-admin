@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { ProCard } from '@ant-design/pro-components';
-import * as d3 from 'd3';
+import { select } from 'd3';
 import { useEffect, useRef } from 'react';
 import dataBar from './components/data.json';
 
@@ -22,7 +22,7 @@ const BarChartRace = () => {
     const height = margin.top + barSize * n + margin.bottom; // SVG 的高度
 
     // 清除已有的 SVG 内容
-    d3.select(svgRef.current).selectAll('*').remove();
+    select(svgRef.current).selectAll('*').remove();
   }, []);
 
   return (

@@ -63,7 +63,6 @@ const InfoGeoHash: React.FC = () => {
     viewer.camera.moveEnd.addEventListener(() => {
       const cameraHeight = viewer.camera.positionCartographic.height;
       // messageApi.success(`相机高度变化: ${cameraHeight}`);
-      console.log('相机高度变化: ', cameraHeight);
     });
 
     setViewer(viewer);
@@ -100,10 +99,8 @@ const InfoGeoHash: React.FC = () => {
     }
     const cartesian = viewer.camera.position; // 获取相机位置
     const cartographic = Cesium.Cartographic.fromCartesian(cartesian); // 获取笛卡尔坐标
-    console.log(cartographic);
     const longitude = Cesium.Math.toDegrees(cartographic.longitude); // 转换为经度
     const latitude = Cesium.Math.toDegrees(cartographic.latitude); // 转换为纬度
-    console.log(longitude, latitude);
     // const precision = 5; // 精度
     const precision = precisions; // 精度
     const geohash = centerGeoHash(latitude, longitude, precision);
@@ -116,7 +113,6 @@ const InfoGeoHash: React.FC = () => {
       viewer.entities.removeAll(); // 移除所有实体
 
       const bounds: any = geohashBounds(geohash);
-      console.log(bounds);
       const rectangles = Cesium.Rectangle.fromDegrees(
         bounds.longitudeMin,
         bounds.latitudeMin,
@@ -245,11 +241,8 @@ const InfoGeoHash: React.FC = () => {
   const handleRange = () => {
     const viewRect = getMapViewRectangle();
     if (viewRect) {
-      console.log('Map view rectangle:', viewRect);
-
       // 计算每个子区域的 GeoHash
       const geohashes = splitAndComputeGeohashes(viewRect, 5); // 精度可以根据需要调整
-      console.log('Geohashes for sub-areas:', geohashes);
       setSubAreas(geohashes);
     }
   };

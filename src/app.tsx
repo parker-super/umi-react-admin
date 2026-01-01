@@ -6,9 +6,19 @@ import 'cesium/Build/Cesium/Widgets/widgets.css';
 import { getInitialState as libGetInitialState } from './utils/Auth/initalState';
 import { requestConfig } from './utils/requestConfig';
 
-// NOTE cesium-heatmap 插件需要全局引入 Cesium 库
+// NOTE: cesium-heatmap 插件需要全局引入 Cesium 库
+// 声明全局 Cesium 类型
+declare global {
+  interface Window {
+    Cesium: typeof import('cesium');
+  }
+}
+
 import * as Cesium from 'cesium';
-window.Cesium = Cesium;
+// 仅在需要时挂载到 window，避免全局污染
+if (typeof window !== 'undefined' && !window.Cesium) {
+  window.Cesium = Cesium;
+}
 
 // NOTE:全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate

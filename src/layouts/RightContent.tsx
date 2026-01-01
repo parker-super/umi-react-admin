@@ -1,9 +1,4 @@
-import {
-  GithubOutlined,
-  GlobalOutlined,
-  SkinOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { GithubOutlined, GlobalOutlined, SkinOutlined, UserOutlined } from '@ant-design/icons';
 import { setLocale, useIntl } from '@umijs/max';
 import { Avatar, Button, Popover, message } from 'antd';
 import { useState } from 'react';
@@ -13,9 +8,7 @@ const RightContent = () => {
   // NOTE: 多语言
   const intl = useIntl();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [localeType, setLocaleType] = useState(
-    localStorage.getItem('umi_locale') || 'zh-CN',
-  );
+  const [localeType, setLocaleType] = useState(localStorage.getItem('umi_locale') || 'zh-CN');
   if (!localStorage.getItem('umi_locale')) {
     setLocale('zh-CN');
   }
@@ -56,7 +49,7 @@ const RightContent = () => {
           <div
             className="w-24 px-2 py-1 text-center rounded-md cursor-pointer hover:bg-zinc-200"
             onClick={() => {
-              console.log('logout');
+              // TODO: 实现登出功能
             }}
           >
             {intl.formatMessage({ id: 'Logout' })}
@@ -93,10 +86,7 @@ const RightContent = () => {
           </div>
         }
       >
-        <Button
-          className="flex items-center justify-center"
-          icon={<SkinOutlined />}
-        />
+        <Button className="flex items-center justify-center" icon={<SkinOutlined />} />
       </Popover>
 
       {/* NOTE: 多语言 */}
@@ -121,10 +111,7 @@ const RightContent = () => {
           </div>
         }
       >
-        <Button
-          className="flex items-center justify-center"
-          icon={<GlobalOutlined />}
-        />
+        <Button className="flex items-center justify-center" icon={<GlobalOutlined />} />
       </Popover>
 
       {/* NOTE: GitHub 链接 */}

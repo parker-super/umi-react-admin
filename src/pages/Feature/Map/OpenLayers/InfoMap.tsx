@@ -44,9 +44,7 @@ const InfoMap = () => {
     return () => map.setTarget(undefined); // 清理 map 对象
   }, []);
 
-  const handleClick = () => {
-    console.log(map);
-  };
+  const handleClick = () => {};
 
   return (
     <>

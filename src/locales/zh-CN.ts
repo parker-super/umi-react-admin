@@ -26,9 +26,9 @@ export default {
   'menu.feature.Cesium.ThermalMap': '热力图',
   'menu.feature.Cesium.Trajectory': '轨迹',
   'menu.feature.Cesium.Unit': '部件',
+  'menu.feature.Cesium.HaiAirPosture': '海空姿态',
   'menu.feature.OpenLayers': 'OpenLayers',
   'menu.feature.OpenLayers.InfoMap': 'InfoMap',
-  'menu.feature.OpenLayers.HaiAirPosture': 'HaiAirPosture',
   // NOTE office
   'menu.Office': 'Office',
   'menu.Office.pdf': 'PDF',

@@ -1,7 +1,6 @@
-import thermal from '@/utils/MapCompute/ThermalMapData.json';
 import { iconData } from '@/utils/MapCompute/dataEnd';
 import { ProCard } from '@ant-design/pro-components';
-import { Alert, Button, Modal, message } from 'antd';
+import { Alert, Button, Modal, Spin, message } from 'antd';
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import { useEffect, useState } from 'react';
@@ -10,11 +9,41 @@ const ThermalMap = () => {
   const [viewer, setViewer] = useState(null as any);
   const [messageApi, contextHolder] = message.useMessage();
   const [data, setData] = useState([] as any);
+  const [thermalData, setThermalData] = useState(null as any); // 保存完整的热力图数据
+  const [loading, setLoading] = useState(true);
   Cesium.Ion.defaultAccessToken = CESIUM_ION_TOKEN as string;
 
+  // 动态加载热力图数据
   useEffect(() => {
+    const loadThermalData = async () => {
+      try {
+        const thermal = await import('@/utils/MapCompute/ThermalMapData.json');
+        const obj = JSON.parse(JSON.stringify(thermal.default));
+        const arrayResult = obj.coverageData.arrayResult;
+        setData(arrayResult);
+        setThermalData(obj); // 保存完整数据供其他功能使用
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to load thermal data:', error);
+        messageApi.error('加载热力图数据失败');
+        setLoading(false);
+      }
+    };
+
+    loadThermalData();
+  }, [messageApi]);
+
+  // 初始化 Cesium Viewer
+  useEffect(() => {
+    // 等待 loading 完成且 DOM 已渲染
+    if (loading || viewer) return;
+
+    // 确保 cesiumContainer 元素存在
+    const container = document.getElementById('cesiumContainer');
+    if (!container) return;
+
     // 创建一个 Cesium Viewer 实例
-    const viewer = new Cesium.Viewer('cesiumContainer', {
+    const newViewer = new Cesium.Viewer('cesiumContainer', {
       // 去除所有的控件
       animation: false, // 是否显示动画控件
       baseLayerPicker: false, // 是否显示图层选择控件
@@ -36,22 +65,18 @@ const ThermalMap = () => {
     });
 
     // 1, 去除版权信息
-    (viewer.cesiumWidget.creditContainer as HTMLElement).style.display = 'none';
+    (newViewer.cesiumWidget.creditContainer as HTMLElement).style.display = 'none';
 
     // 修改 homeButton 的位置
     let initView = {
       destination: Cesium.Cartesian3.fromDegrees(116.3974, 39.9093, 15000000),
     };
-    // viewer.camera.setView(initView);
-    viewer.camera.flyTo(initView);
-
-    let obj = JSON.parse(JSON.stringify(thermal));
-    let arrayResult = obj.coverageData.arrayResult;
-    setData(arrayResult);
+    // newViewer.camera.setView(initView);
+    newViewer.camera.flyTo(initView);
 
     // 2, 添加一个点击事件来显示位置坐标：
-    viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement: { position: Cesium.Cartesian2 }) {
-      const cartesian = viewer.camera.pickEllipsoid(movement.position, viewer.scene.globe.ellipsoid);
+    newViewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement: { position: Cesium.Cartesian2 }) {
+      const cartesian = newViewer.camera.pickEllipsoid(movement.position, newViewer.scene.globe.ellipsoid);
       if (cartesian) {
         const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         const longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
@@ -61,20 +86,22 @@ const ThermalMap = () => {
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    setViewer(viewer);
+    setViewer(newViewer);
 
     setTimeout(() => {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      handleIcon(viewer);
+      handleIcon(newViewer);
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      handleMouse(viewer);
+      handleMouse(newViewer);
     }, 100);
 
     // 销毁
     return () => {
-      viewer.destroy();
+      if (newViewer && !newViewer.isDestroyed()) {
+        newViewer.destroy();
+      }
     };
-  }, []);
+  }, [loading, messageApi]);
 
   // NOTE 鼠标事件
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,7 +127,6 @@ const ThermalMap = () => {
         let cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(pickedPosition._value);
         let lng = Cesium.Math.toDegrees(cartographic.longitude);
         let lat = Cesium.Math.toDegrees(cartographic.latitude);
-        console.log(lng, lat);
         setPositionInfo(position);
         setIsModalOpen(true);
       }
@@ -160,6 +186,10 @@ const ThermalMap = () => {
 
   // NOTE 两个实体距离计算
   const handlePrimary = () => {
+    if (!viewer) {
+      messageApi.warning('地图还未初始化完成');
+      return;
+    }
     let box1 = iconData[0];
     let box2 = iconData[1];
 
@@ -202,9 +232,16 @@ const ThermalMap = () => {
   // NOTE 渲染热力图 (base64 图片数据)
   const handleClick = () => {
     setIsModalOpen(false);
-    let obj = JSON.parse(JSON.stringify(thermal));
-    console.log(obj);
-    console.log(obj.coverageData.arrayResult);
+    // 检查数据是否加载完成
+    if (!thermalData) {
+      messageApi.warning('热力图数据还未加载完成');
+      return;
+    }
+    if (!viewer) {
+      messageApi.warning('地图还未初始化完成');
+      return;
+    }
+
     // let longitude = 105.658203125;
     // let latitude = 40.658203125;
     let longitude = 106.65;
@@ -234,7 +271,7 @@ const ThermalMap = () => {
     });
 
     // 开始处理 base64 图片数据
-    let base64Image = 'data:image/png;base64,' + obj.diagramPngStream; // base64 图片数据
+    let base64Image = 'data:image/png;base64,' + thermalData.diagramPngStream; // base64 图片数据
 
     // 将 Base64 数据转换为 Blob 对象
     function base64ToBlob(base64: any, mime: any) {
@@ -289,6 +326,10 @@ const ThermalMap = () => {
 
   // NOTE 渲染热力图 (点云效果)
   const handleClick2 = () => {
+    if (!viewer) {
+      messageApi.warning('地图还未初始化完成');
+      return;
+    }
     const dataPoints = data.flat();
 
     function getColorForStrength(value: any) {
@@ -387,6 +428,10 @@ const ThermalMap = () => {
 
   // NOTE 清楚所有地图数据
   const handleClear = () => {
+    if (!viewer) {
+      messageApi.warning('地图还未初始化完成');
+      return;
+    }
     viewer.dataSources.removeAll();
     viewer.entities.removeAll();
   };
@@ -396,33 +441,42 @@ const ThermalMap = () => {
       <Alert message="热力图" type="success" showIcon className="mb-2" />
       <ProCard>
         {contextHolder}
-        <Button className="mb-2" onClick={() => handlePrimary()}>
-          距离计算
-        </Button>
-        <Button className="mb-2 ml-2" onClick={() => handleClick()}>
-          渲染热力图数据 base64
-        </Button>
-        <Button className="mb-2 ml-2" onClick={() => handleClick2()}>
-          渲染点云效果
-        </Button>
-        {/* <Button className="mb-2 ml-2" onClick={() => handleClick3()}>
+        {loading && (
+          <div className="flex items-center justify-center p-10">
+            <Spin tip="正在加载热力图数据..." size="large" />
+          </div>
+        )}
+        {!loading && (
+          <>
+            <Button className="mb-2" onClick={() => handlePrimary()}>
+              距离计算
+            </Button>
+            <Button className="mb-2 ml-2" onClick={() => handleClick()}>
+              渲染热力图数据 base64
+            </Button>
+            <Button className="mb-2 ml-2" onClick={() => handleClick2()}>
+              渲染点云效果
+            </Button>
+            {/* <Button className="mb-2 ml-2" onClick={() => handleClick3()}>
           渲染热力图数据2
         </Button> */}
-        <Button className="mb-2 ml-2" onClick={() => handleClear()}>
-          清除地图数据
-        </Button>
-        {/* <div id="cesiumContainer" style={{ width: '100%', height: '100vh' }} /> */}
-        <div id="cesiumContainer" />
-        <Modal
-          title=""
-          open={isModalOpen}
-          style={{ top: positionInfo.y + 100, left: positionInfo.x - 300 }}
-          onCancel={() => setIsModalOpen(false)}
-          footer={null}
-          width={300}
-        >
-          <Button onClick={() => handleClick()}>渲染热力图数据</Button>
-        </Modal>
+            <Button className="mb-2 ml-2" onClick={() => handleClear()}>
+              清除地图数据
+            </Button>
+            {/* <div id="cesiumContainer" style={{ width: '100%', height: '100vh' }} /> */}
+            <div id="cesiumContainer" />
+            <Modal
+              title=""
+              open={isModalOpen}
+              style={{ top: positionInfo.y + 100, left: positionInfo.x - 300 }}
+              onCancel={() => setIsModalOpen(false)}
+              footer={null}
+              width={300}
+            >
+              <Button onClick={() => handleClick()}>渲染热力图数据</Button>
+            </Modal>
+          </>
+        )}
       </ProCard>
     </>
   );

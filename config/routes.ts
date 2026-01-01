@@ -12,16 +12,6 @@ export const routes = [
     icon: 'HomeFilled',
     component: './Home',
   },
-  // {
-  //   name: '权限演示',
-  //   path: '/access',
-  //   component: './Access',
-  // },
-  // {
-  //   name: ' CRUD 示例',
-  //   path: '/table',
-  //   component: './Table',
-  // },
   {
     name: 'feature',
     path: '/feature',
@@ -31,18 +21,8 @@ export const routes = [
         name: 'feature',
         path: '/feature',
         hideInMenu: true,
-        // component: './Feature/index',
         component: './Feature/FullCalendar',
       },
-      // {
-      //   name: 'formily',
-      //   path: '/feature/formily',
-      //   component: './Feature/Formily/Designable',
-      //   icon: 'HourglassOutlined',
-      //   target: '_blank',
-      //   hideChildrenInMenu: true,
-      //   menuRender: false,
-      // },
       {
         name: 'fullCalendar',
         path: '/feature/fullCalendar',
@@ -77,7 +57,6 @@ export const routes = [
         name: 'VideoPlayer',
         path: '/feature/VideoPlayer',
         icon: 'VideoCameraAddOutlined',
-        // component: './Feature/VideoPlayer/xgplayer',
         routes: [
           {
             name: 'xgplayer',
@@ -101,17 +80,11 @@ export const routes = [
             path: '/feature/D3/Frequency',
             component: './Feature/D3/Frequency',
           },
-          // {
-          //   name: 'BarChartRace',
-          //   path: '/feature/D3/BarChartRace',
-          //   component: './Feature/D3/BarChartRace',
-          // },
         ],
       },
       {
         name: 'AudioFeature',
         path: '/feature/AudioFeature',
-        // icon: 'NotificationOutlined',
         icon: 'CustomerServiceOutlined',
         routes: [
           {

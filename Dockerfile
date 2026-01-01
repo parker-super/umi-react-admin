@@ -9,9 +9,6 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 # 暴露 80 端口
 EXPOSE 80
 
-# 启动 Nginx 服务
-CMD ["nginx", "-g", "daemon off;"]
-
 # 为 Nginx 配置文件添加执行权限
 # RUN chmod +x /etc/nginx/nginx.conf
 

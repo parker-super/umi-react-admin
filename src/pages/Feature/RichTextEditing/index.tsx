@@ -7,7 +7,6 @@ export default () => {
   const editorRef = useRef<any>(null);
   const log = () => {
     if (editorRef.current) {
-      console.log(editorRef.current.getContent());
     }
   };
   return (
@@ -44,8 +43,7 @@ export default () => {
             'bold italic forecolor | alignleft aligncenter ' +
             'alignright alignjustify | bullist numlist outdent indent | ' +
             'removeformat | help',
-          content_style:
-            'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
         }}
       />
       <Button className="mt-8" onClick={log}>

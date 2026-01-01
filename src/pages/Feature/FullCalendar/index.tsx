@@ -7,13 +7,7 @@
  * zhLocale 语言
  */
 import { ProCard } from '@ant-design/pro-components';
-import {
-  DateSelectArg,
-  EventApi,
-  EventClickArg,
-  EventContentArg,
-  formatDate,
-} from '@fullcalendar/core';
+import { DateSelectArg, EventApi, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/core';
 import zhLocale from '@fullcalendar/core/locales/zh-cn';
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
@@ -78,11 +72,7 @@ export default () => {
         </div>
         <div className="demo-app-sidebar-section">
           <label>
-            <input
-              type="checkbox"
-              checked={state.weekendsVisible}
-              onChange={handleWeekendsToggle}
-            ></input>
+            <input type="checkbox" checked={state.weekendsVisible} onChange={handleWeekendsToggle}></input>
             切换周末
           </label>
         </div>
@@ -137,12 +127,7 @@ export default () => {
           // 语言
           locale={zhLocale}
           // 插件
-          plugins={[
-            dayGridPlugin,
-            timeGridPlugin,
-            interactionPlugin,
-            multiMonthPlugin,
-          ]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, multiMonthPlugin]}
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
@@ -170,7 +155,6 @@ export default () => {
           // 点击日期
           dateClick={(arg) => {
             // alert(arg.dateStr)
-            console.log(arg.dateStr);
           }}
           /* 你可以在这些触发时更新远程数据库:
           eventAdd={function(){}}

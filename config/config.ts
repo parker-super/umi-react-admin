@@ -23,8 +23,7 @@ export default defineConfig({
   ],
   define: {
     CESIUM_BASE_URL: '/Cesium',
-    CESIUM_ION_TOKEN:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkZjBmZTAzMS1jMTJkLTQ5OGQtYTkyYS0xODcyMjU3MTQzMmUiLCJpZCI6MTg2MDcxLCJpYXQiOjE3MDM0MDIwMzl9.DQzBf8T_0U92DwjBcYQqdgwhFs-Cx7EacplwoL_ypjY',
+    CESIUM_ION_TOKEN: process.env.CESIUM_ION_TOKEN,
   },
   headScripts: [
     {

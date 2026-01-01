@@ -1,0 +1,9 @@
+{
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "framework": "umi",
+  "installCommand": "pnpm install",
+  "github": {
+    "silent": true
+  }
+}

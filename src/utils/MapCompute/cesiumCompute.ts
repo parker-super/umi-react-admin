@@ -213,8 +213,6 @@ type Point = {
   latitude: number;
 };
 export function mergePolygons(polygonArrays: Point[][]) {
-  console.log('输入polygonArrays:', JSON.stringify(polygonArrays, null, 2)); // 输入的多边形数组
-
   // 检查输入是否有效
   if (!Array.isArray(polygonArrays) || polygonArrays.length === 0) {
     throw new Error('输入必须是多边形坐标的非空数组。');
@@ -258,12 +256,9 @@ export function mergePolygons(polygonArrays: Point[][]) {
         validPoints.push(validPoints[0]);
       }
 
-      console.log(`处理多边形 ${index}:`, JSON.stringify(validPoints, null, 2));
       return validPoints;
     })
     .filter(Boolean);
-
-  console.log('有效的多边形:', JSON.stringify(validPolygons, null, 2));
 
   if (validPolygons.length === 0) {
     throw new Error('没有要合并的有效多边形。');
@@ -274,7 +269,6 @@ export function mergePolygons(polygonArrays: Point[][]) {
     .map((polygon: any, index: number) => {
       try {
         const coordinates = polygon.map((p: any) => [p.longitude, p.latitude]);
-        console.log(`创建 turf 多边形 ${index} 坐标:`, JSON.stringify(coordinates));
         return turf.polygon([coordinates]);
       } catch (error) {
         console.error(`创建 turf 多边形错误 ${index}:`, error);
@@ -283,8 +277,6 @@ export function mergePolygons(polygonArrays: Point[][]) {
     })
     .filter(Boolean);
 
-  console.log('创建草皮多边形:', turfPolygons.length);
-
   // 检查是否有有效的 turf 多边形
   if (turfPolygons.length === 0) {
     throw new Error('未能创建有效的 turf 多边形。');
@@ -292,7 +284,6 @@ export function mergePolygons(polygonArrays: Point[][]) {
 
   // 如果只有一个多边形，不需要合并
   if (turfPolygons.length === 1) {
-    console.log('只有一个有效的多边形，不需要合并。');
     const coordinates = turfPolygons[0].geometry.coordinates[0];
     return coordinates.map((coord: any) => ({
       longitude: coord[0],
@@ -302,10 +293,8 @@ export function mergePolygons(polygonArrays: Point[][]) {
 
   // 尝试合并多边形
   try {
-    console.log('使用 turf.combine 组合多边形');
     const featureCollection: any = turf.featureCollection(turfPolygons);
     const combined = turf.combine(featureCollection);
-    console.log('合并后的结果:', JSON.stringify(combined));
 
     if (!combined || !combined.features || combined.features.length === 0) {
       throw new Error('组合导致没有功能');
@@ -349,8 +338,6 @@ export function mergePolygons(polygonArrays: Point[][]) {
  */
 
 export function mergePolygonsPath(polygonArrays: any) {
-  console.log(`开始合并过程 ${polygonArrays.length} 多边形`);
-
   if (!Array.isArray(polygonArrays) || polygonArrays.length === 0) {
     throw new Error('输入必须是多边形坐标的非空数组.');
   }
@@ -378,8 +365,6 @@ export function mergePolygonsPath(polygonArrays: any) {
 
     return polygon.filter(isValidPoint);
   });
-
-  console.log(`初始处理后的总积分: ${allPoints.length}`);
 
   if (allPoints.length < 3) {
     throw new Error('没有足够的有效点来创建多边形。');
@@ -426,8 +411,6 @@ export function mergePolygonsPath(polygonArrays: any) {
     convexHull.push(convexHull[0]);
   }
 
-  console.log(`凸包计算 ${convexHull.length} 点`);
-
   // 简化凸包，去掉不必要的点
   function simplifyPolygon(points: any, epsilon = 1e-8) {
     if (points.length <= 4) return points; // Can't simplify further
@@ -447,8 +430,6 @@ export function mergePolygonsPath(polygonArrays: any) {
   }
 
   const simplifiedHull = simplifyPolygon(convexHull);
-
-  console.log(`最后的多边形有 ${simplifiedHull.length} 点`);
 
   return simplifiedHull;
 }

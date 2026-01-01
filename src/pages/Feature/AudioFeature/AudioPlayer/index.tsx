@@ -64,7 +64,6 @@ export default function AudioPlayer() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let nullText = 0;
     player.on('lyricUpdate', (res) => {
-      console.log(res);
       if (res.lyric === '\n') {
         nullText++;
       }
