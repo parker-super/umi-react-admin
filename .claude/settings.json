@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npm run *)",
+      "Read(./**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:npmjs.com)"
+    ],
+    "deny": ["Read(.env)", "Read(.env.*)", "Bash(rm -rf *)"],
+    "ask": ["Bash(git push *)"]
+  },
+  "env": {
+    "CESIUM_ION_TOKEN": "${CESIUM_ION_TOKEN}"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm format",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
